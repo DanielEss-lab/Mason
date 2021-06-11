@@ -12,7 +12,7 @@ import multiprocessing
 import tqdm
 
 #set the file relative to main.py
-configFile = "Pt_Methane.ini"
+configFile = "config.ini"
 
 ##############################################################################
 #                  Initialization                                            #
