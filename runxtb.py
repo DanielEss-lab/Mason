@@ -10,7 +10,7 @@ import os
 import shutil
 import configparser
 
-configFile = "Pt_Methane.ini"
+configFile = "config.ini"
 config = configparser.ConfigParser()
 config.read(configFile)
 
