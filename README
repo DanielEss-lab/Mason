@@ -9,3 +9,4 @@ conda install tqdm
 # Or use Mason-GUI to help generate config.int.
 # Excute "python main.py" and your new generated sturctures can be found at output/xtbopt/.
 # It is always recommended to use xtb to get better optimized structures when the code asked if you would like to. 
+# The option that not using xtb is designed for windows and mac users and it is also suggested to run an additional round with xtb on linux later on. 
