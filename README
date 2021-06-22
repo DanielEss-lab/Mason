@@ -5,6 +5,6 @@ conda install -c conda-forge openbabel
 conda install -c conda-forge xtb
 conda install tqdm
 
-# TO generate your own structures by modifing everything in Pt_Methane.ini file 
-# and modify the configFile in "main.py" and "runxtb.py" as well if you change the configuration filename.
-# Excute "python main.py" and locate your generated sturctures at output/xtbopt/
+# To generate your own structures by modifing everything in config.ini.
+# Or use Mason-GUI to help generate config.int.
+# Finally excute "python main.py" and your new generated sturctures can be found at output/xtbopt/.
