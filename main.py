@@ -72,10 +72,11 @@ if __name__=='__main__':
 ##############################################################################
 #                  MultiProcessing      End                                  #
 ########################################################################### ###  
-xtb = input("Do you wanna run xtb (y/n)?")
+xtb = input("Do you want to run xtb subsequently (y/n)? ")
 if xtb == 'y':
     import runxtb
-if xtb == 'no':
+if xtb != 'y':
+    print("You can also execute \"python runxtb.py\" to do the same thing later.")
     exit()
 
 
