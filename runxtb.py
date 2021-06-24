@@ -10,6 +10,7 @@ import os
 import time
 import shutil
 import configparser
+import tqdm
 
 configFile = "config.ini"
 config = configparser.ConfigParser()
@@ -18,13 +19,16 @@ config.read(configFile)
 # XTB=["wsl", "-d", "ubuntu", "-e", "/opt/xtb-6.4.0/bin/xtb"]
 XTB=["xtb"]
 
-freezeStrs = config['Properties']['freeze'].split(',')
-freezeAtoms = []
-for freezeStr in freezeStrs:
-    for atomNum in freezeStr.split('-'):
-        if atomNum not in freezeAtoms:
-            freezeAtoms.append(atomNum)
-freezeAtoms.sort()
+iF = open(config['IODir']['Template'], "r")
+freezeAtoms = list(map(str, range(1, int(iF.readline()) + 1)))
+iF.close()
+#freezeStrs = config['Properties']['freeze'].split(',')
+#freezeAtoms = []
+#for freezeStr in freezeStrs:
+#    for atomNum in freezeStr.split('-'):
+#        if atomNum not in freezeAtoms:
+#            freezeAtoms.append(atomNum)
+#freezeAtoms.sort()
 
 
 os.environ['OMP_STACKSIZE'] = '1G'
@@ -48,21 +52,25 @@ oF.write("$fix\n  atoms: "+",".join(freezeAtoms)+"\n$end")
 oF.close()
 devNull = open(os.devnull, 'w')
 totalItems = len(files)
-i = 1
 start = time.time()
+pbar = tqdm.tqdm(total = len(files))
 for file in files:
     shutil.copyfile("../" + file, "temp.mol")
     subprocess.run(XTB + ["temp.mol", "--opt", "--gfnff", "--input", "freeze.inp"], stdout=devNull, stderr=devNull)
     os.remove("temp.mol")
     if "xtbopt.mol" not in os.listdir():
+        pbar.update()
         break
     os.rename("xtbopt.mol", "temp.mol")
     subprocess.run(XTB + ["temp.mol", "--opt", "--input", "freeze.inp"], stdout=devNull, stderr=devNull)
     os.remove("temp.mol")
     if "xtbopt.mol" not in os.listdir():
+        pbar.update()
         break
     shutil.move("xtbopt.mol", "../xtbopt/" + file)
-    i += 1
-    if i % int(totalItems / 100 + 1) == 0:
-        print(str(round(i / totalItems * 100, 1))+"% finished", end="\r")
+    pbar.update()
+pbar.close()
 print("Finished in", round((time.time() - start) / 3600, 2), "h")
+os.chdir("..")
+if os.path.exists("xtbtmp"):
+    shutil.rmtree("xtbtmp")
