@@ -72,7 +72,7 @@ if __name__=='__main__':
 ##############################################################################
 #                  MultiProcessing      End                                  #
 ########################################################################### ###  
-xtb = input("Do you want to run xtb subsequently (y/n)? ")
+xtb = input("Do you want to run xtb subsequently? This usually takes much longer time. (y/n) ")
 if xtb == 'y':
     import runxtb
 if xtb != 'y':
