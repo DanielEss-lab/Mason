@@ -7,6 +7,7 @@ Created on Thu Mar  4 12:37:40 2021
 
 import subprocess
 import os
+import time
 import shutil
 import configparser
 
@@ -33,8 +34,9 @@ if os.path.exists("xtbtmp"):
 os.makedirs("xtbtmp")
 if os.path.exists("xtbopt"):
     print("Directory xtbopt found. Check if you still need them from the previous runs.")
-    print("Make sure you don't need it. Please delete the directory by hand.")
-    exit()
+    if(input("To delete results from previous runs (y/n)? ") != 'y'):
+        exit()
+    shutil.rmtree("xtbopt")
 os.mkdir("xtbopt")
 files = []
 for file in os.listdir():
@@ -47,14 +49,20 @@ oF.close()
 devNull = open(os.devnull, 'w')
 totalItems = len(files)
 i = 1
+start = time.time()
 for file in files:
     shutil.copyfile("../" + file, "temp.mol")
-    subprocess.run(XTB + ["temp.mol", "--opt", "--gfnff", "--input", "freeze.inp"], stdout=devNull)
+    subprocess.run(XTB + ["temp.mol", "--opt", "--gfnff", "--input", "freeze.inp"], stdout=devNull, stderr=devNull)
     os.remove("temp.mol")
+    if "xtbopt.mol" not in os.listdir():
+        break
     os.rename("xtbopt.mol", "temp.mol")
-    subprocess.run(XTB + ["temp.mol", "--opt", "--input", "freeze.inp"], stdout=devNull )
+    subprocess.run(XTB + ["temp.mol", "--opt", "--input", "freeze.inp"], stdout=devNull, stderr=devNull)
     os.remove("temp.mol")
+    if "xtbopt.mol" not in os.listdir():
+        break
     shutil.move("xtbopt.mol", "../xtbopt/" + file)
     i += 1
     if i % int(totalItems / 100 + 1) == 0:
-        print(str(i / totalItems * 100)+"% finished")
+        print(str(round(i / totalItems * 100, 1))+"% finished", end="\r")
+print("Finished in", round((time.time() - start) / 3600, 2), "h")
