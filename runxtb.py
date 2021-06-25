@@ -59,13 +59,16 @@ pbar = tqdm.tqdm(total = len(files))
 conv = ob.OBConversion()            
 conv.SetInFormat("mol")
 conv.SetOutFormat("mol")
+oF = open("failure.txt", "w")
+oF.write("filename\treason\n")
 for file in files:
     shutil.copyfile("../" + file, "temp.mol")
     subprocess.run(XTB + ["temp.mol", "--opt", "--gfnff", "--input", "freeze.inp"], stdout=devNull, stderr=devNull)
     os.remove("temp.mol")
     if "xtbopt.mol" not in os.listdir():
         pbar.update()
-        break
+        oF.write(file + "\tgfnff\n")
+        continue
     os.rename("xtbopt.mol", "temp.mol")
     if config['Miscs']['dummyAtoms'].split(',')[0].isdigit():
         dummyAtoms = config['Miscs']['dummyAtoms'].split(',')
@@ -82,10 +85,12 @@ for file in files:
     os.remove("temp.mol")
     if "xtbopt.mol" not in os.listdir():
         pbar.update()
-        break
+        oF.write(file + "\tgfn2\n")
+        continue
     shutil.move("xtbopt.mol", "../xtbopt/" + file)
     pbar.update()
 pbar.close()
+oF.close()
 print("Finished in", round((time.time() - start) / 3600, 2), "h")
 os.chdir("..")
 if os.path.exists("xtbtmp"):
