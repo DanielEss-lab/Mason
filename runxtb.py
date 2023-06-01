@@ -74,12 +74,14 @@ for file in files:
         dummyAtoms = config['Miscs']['dummyAtoms'].split(',')
         mol = ob.OBMol()
         conv.ReadFile(mol, "temp.mol")
+        conv.SetInStream(None)
         atoms = []
         for atom in dummyAtoms:
             atoms.append(mol.GetAtom(int(atom)))
         for atom in atoms:
             mol.DeleteAtom(atom)
         conv.WriteFile(mol, "temp.mol")
+        conv.SetOutStream(None)
         mol.Clear()
     subprocess.run(XTB + ["temp.mol", "--opt", "--input", "freeze.inp"], stdout=devNull, stderr=devNull)
     os.remove("temp.mol")
